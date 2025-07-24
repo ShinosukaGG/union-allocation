@@ -1,4 +1,4 @@
-import React, { useState } from "react"; import data from "../public/top_2000_from_network.json"; import "../styles/styles.css";
+import React, { useState } from "react"; import data from "../public/top_2000_from_network.json";
 
 export default function UnionCalculator() { const [query, setQuery] = useState(""); const [result, setResult] = useState(null);
 
