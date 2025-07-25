@@ -5,6 +5,7 @@ export default function UnionCalculator() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState(null);
   const [season1Data, setSeason1Data] = useState(null);
+  const [showSeason1, setShowSeason1] = useState(false);
 
   const handleSearch = async () => {
     const user = data.find(
@@ -15,13 +16,14 @@ export default function UnionCalculator() {
     try {
       const res = await fetch("/season1-ss.json");
       const json = await res.json();
-      const season1User = json.find(
+      const s1user = json.find(
         (u) => u.username.toLowerCase() === query.trim().toLowerCase()
       );
-      setSeason1Data(season1User || null);
+      setSeason1Data(s1user || null);
+      setShowSeason1(!!s1user); // auto-toggle if found
     } catch (err) {
-      console.error("Failed to fetch Season 1 data");
       setSeason1Data(null);
+      setShowSeason1(false);
     }
   };
 
@@ -52,6 +54,15 @@ export default function UnionCalculator() {
           <h2 className="username">@{result.username}</h2>
           <p className="mindshare">Mindshare: {result.mindshare}</p>
 
+          {season1Data && (
+            <button
+              onClick={() => setShowSeason1(!showSeason1)}
+              className="button toggle-button"
+            >
+              {showSeason1 ? "Hide" : "Show"} Season 1 Stats
+            </button>
+          )}
+
           <div className="season-tables">
             {/* Season 0 */}
             <div className="allocation">
@@ -75,8 +86,7 @@ export default function UnionCalculator() {
                   <tr>
                     <td>1B FDV (Bull)</td>
                     <td>
-                      $
-                      {calculateAllocation(result.mindshare).toLocaleString()}
+                      ${calculateAllocation(result.mindshare).toLocaleString()}
                     </td>
                   </tr>
                   <tr>
@@ -101,8 +111,8 @@ export default function UnionCalculator() {
               </table>
             </div>
 
-            {/* Season 1 (if found) */}
-            {season1Data && (
+            {/* Season 1 (toggle) */}
+            {season1Data && showSeason1 && (
               <div className="allocation">
                 <h3>Your $U Allocation (Season 1):</h3>
                 <p className="allocation-value">
@@ -157,4 +167,4 @@ export default function UnionCalculator() {
       )}
     </div>
   );
-                      }
+              }
