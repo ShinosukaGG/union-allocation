@@ -1,21 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import season0 from "../public/top_2000_from_network.json";
-import season1 from "../public/season1-ss.json";
 
 export default function UnionCalculator() {
   const [query, setQuery] = useState("");
   const [result0, setResult0] = useState(null);
   const [result1, setResult1] = useState(null);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const user0 = season0.find(
       (u) => u.username.toLowerCase() === query.trim().toLowerCase()
     );
-    const user1 = season1.find(
-      (u) => u.username.toLowerCase() === query.trim().toLowerCase()
-    );
     setResult0(user0 || null);
-    setResult1(user1 || null);
+
+    try {
+      const res = await fetch("/season1-ss.json");
+      const json = await res.json();
+      const user1 = json.find(
+        (u) => u.username.toLowerCase() === query.trim().toLowerCase()
+      );
+      setResult1(user1 || null);
+    } catch (err) {
+      console.error("❌ Failed to fetch Season 1 JSON", err);
+      setResult1(null);
+    }
   };
 
   const calculateAllocation = (mindshare) => {
@@ -23,8 +30,8 @@ export default function UnionCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl md:text-4xl font-bold mb-8 text-center">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+      <h1 className="text-3xl font-bold mb-8 text-center">
         Union Allocation Calculator by Shinosuka
       </h1>
 
@@ -32,14 +39,14 @@ export default function UnionCalculator() {
         <div className="flex flex-col gap-4">
           <input
             type="text"
-            placeholder="Search by username..."
+            placeholder="Enter username..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="p-4 text-lg rounded-md bg-zinc-800 placeholder-zinc-400 focus:outline-none"
+            className="p-4 rounded-md bg-zinc-800 placeholder-zinc-400 focus:outline-none"
           />
           <button
             onClick={handleSearch}
-            className="bg-zinc-700 hover:bg-zinc-600 rounded-md p-3 font-semibold"
+            className="p-3 rounded-md bg-zinc-700 hover:bg-zinc-600 font-semibold"
           >
             Search
           </button>
@@ -56,75 +63,96 @@ export default function UnionCalculator() {
             />
           )}
           <h2 className="text-xl font-bold">@{query}</h2>
-          <p className="text-zinc-400 mb-6">
+
+          <div className="mt-2 mb-6 text-sm text-zinc-400">
             Mindshare:{" "}
             {result0?.mindshare || result1?.mindshare || "Not found"}
-          </p>
+          </div>
 
-          <div className="flex flex-col md:flex-row justify-center gap-6">
+          <div className="flex flex-col md:flex-row gap-6 justify-center text-left">
             {result0 && (
-              <div className="flex-1 bg-zinc-800 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Season 0</h3>
-                <p className="text-sm text-zinc-400 mb-2">
-                  Mindshare: {result0.mindshare}
-                </p>
-                <p className="text-2xl mb-4">
+              <div className="flex-1 bg-zinc-800 p-6 rounded-lg">
+                <h3 className="text-lg font-bold mb-2 text-center">Season 0</h3>
+                <p className="text-2xl text-center mb-4">
                   {calculateAllocation(result0.mindshare).toLocaleString()} $U
                 </p>
-                <h4 className="text-md font-semibold mb-1">
-                  Value of Your $U Allocation:
-                </h4>
-                <ul className="text-left text-sm">
-                  <li>
-                    <strong>500M FDV:</strong> $
-                    {(calculateAllocation(result0.mindshare) * 0.5).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>1B FDV:</strong> $
-                    {(calculateAllocation(result0.mindshare) * 1).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>1.5B FDV:</strong> $
-                    {(calculateAllocation(result0.mindshare) * 1.5).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>2B FDV:</strong> $
-                    {(calculateAllocation(result0.mindshare) * 2).toLocaleString()}
-                  </li>
-                </ul>
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr>
+                      <td>500M FDV (Ideal)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result0.mindshare) * 0.5
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>1B FDV (Bull)</td>
+                      <td className="text-right">
+                        ${calculateAllocation(result0.mindshare).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>1.5B FDV (SuperBull)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result0.mindshare) * 1.5
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2B FDV (GigaBull)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result0.mindshare) * 2
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
 
             {result1 && (
-              <div className="flex-1 bg-zinc-800 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Season 1</h3>
-                <p className="text-sm text-zinc-400 mb-2">
-                  Mindshare: {result1.mindshare}
-                </p>
-                <p className="text-2xl mb-4">
+              <div className="flex-1 bg-zinc-800 p-6 rounded-lg">
+                <h3 className="text-lg font-bold mb-2 text-center">Season 1</h3>
+                <p className="text-2xl text-center mb-4">
                   {calculateAllocation(result1.mindshare).toLocaleString()} $U
                 </p>
-                <h4 className="text-md font-semibold mb-1">
-                  Value of Your $U Allocation:
-                </h4>
-                <ul className="text-left text-sm">
-                  <li>
-                    <strong>500M FDV:</strong> $
-                    {(calculateAllocation(result1.mindshare) * 0.5).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>1B FDV:</strong> $
-                    {(calculateAllocation(result1.mindshare) * 1).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>1.5B FDV:</strong> $
-                    {(calculateAllocation(result1.mindshare) * 1.5).toLocaleString()}
-                  </li>
-                  <li>
-                    <strong>2B FDV:</strong> $
-                    {(calculateAllocation(result1.mindshare) * 2).toLocaleString()}
-                  </li>
-                </ul>
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr>
+                      <td>500M FDV (Ideal)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result1.mindshare) * 0.5
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>1B FDV (Bull)</td>
+                      <td className="text-right">
+                        ${calculateAllocation(result1.mindshare).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>1.5B FDV (SuperBull)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result1.mindshare) * 1.5
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2B FDV (GigaBull)</td>
+                      <td className="text-right">
+                        ${(
+                          calculateAllocation(result1.mindshare) * 2
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -132,4 +160,4 @@ export default function UnionCalculator() {
       )}
     </div>
   );
-                                          }
+              }
