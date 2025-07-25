@@ -1,30 +1,24 @@
 import React, { useState } from "react";
-import data from "../public/top_2000_from_network.json";
+import season0 from "../public/top_2000_from_network.json";
+import season1 from "../public/season1-ss.json";
 
 export default function UnionCalculator() {
   const [query, setQuery] = useState("");
-  const [result, setResult] = useState(null);
-  const [season1Data, setSeason1Data] = useState(null);
+  const [resultS0, setResultS0] = useState(null);
+  const [resultS1, setResultS1] = useState(null);
   const [showSeason1, setShowSeason1] = useState(false);
 
-  const handleSearch = async () => {
-    const user = data.find(
+  const handleSearch = () => {
+    const userS0 = season0.find(
       (u) => u.username.toLowerCase() === query.trim().toLowerCase()
     );
-    setResult(user || null);
+    const userS1 = season1.find(
+      (u) => u.username.toLowerCase() === query.trim().toLowerCase()
+    );
 
-    try {
-      const res = await fetch("/season1-ss.json");
-      const json = await res.json();
-      const s1user = json.find(
-        (u) => u.username.toLowerCase() === query.trim().toLowerCase()
-      );
-      setSeason1Data(s1user || null);
-      setShowSeason1(!!s1user); // auto-toggle if found
-    } catch (err) {
-      setSeason1Data(null);
-      setShowSeason1(false);
-    }
+    setResultS0(userS0 || null);
+    setResultS1(userS1 || null);
+    setShowSeason1(!!userS1); // auto-show if found
   };
 
   const calculateAllocation = (mindshare) => {
@@ -48,13 +42,13 @@ export default function UnionCalculator() {
         </button>
       </div>
 
-      {result && (
+      {resultS0 && (
         <div className="result-box">
-          <img src={result.pfp} alt="Twitter PFP" className="pfp" />
-          <h2 className="username">@{result.username}</h2>
-          <p className="mindshare">Mindshare: {result.mindshare}</p>
+          <img src={resultS0.pfp} alt="Twitter PFP" className="pfp" />
+          <h2 className="username">@{resultS0.username}</h2>
+          <p className="mindshare">Mindshare: {resultS0.mindshare}</p>
 
-          {season1Data && (
+          {resultS1 && (
             <button
               onClick={() => setShowSeason1(!showSeason1)}
               className="button toggle-button"
@@ -68,7 +62,7 @@ export default function UnionCalculator() {
             <div className="allocation">
               <h3>Your $U Allocation (Season 0):</h3>
               <p className="allocation-value">
-                {calculateAllocation(result.mindshare).toLocaleString()} $U
+                {calculateAllocation(resultS0.mindshare).toLocaleString()} $U
               </p>
 
               <h3>Value of Your $U Allocation:</h3>
@@ -77,46 +71,37 @@ export default function UnionCalculator() {
                   <tr>
                     <td>500M FDV (Ideal)</td>
                     <td>
-                      $
-                      {(
-                        calculateAllocation(result.mindshare) * 0.5
-                      ).toLocaleString()}
+                      ${(calculateAllocation(resultS0.mindshare) * 0.5).toLocaleString()}
                     </td>
                   </tr>
                   <tr>
                     <td>1B FDV (Bull)</td>
                     <td>
-                      ${calculateAllocation(result.mindshare).toLocaleString()}
+                      ${calculateAllocation(resultS0.mindshare).toLocaleString()}
                     </td>
                   </tr>
                   <tr>
                     <td>1.5B FDV (SuperBull)</td>
                     <td>
-                      $
-                      {(
-                        calculateAllocation(result.mindshare) * 1.5
-                      ).toLocaleString()}
+                      ${(calculateAllocation(resultS0.mindshare) * 1.5).toLocaleString()}
                     </td>
                   </tr>
                   <tr>
                     <td>2B FDV (GigaBull)</td>
                     <td>
-                      $
-                      {(
-                        calculateAllocation(result.mindshare) * 2
-                      ).toLocaleString()}
+                      ${(calculateAllocation(resultS0.mindshare) * 2).toLocaleString()}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            {/* Season 1 (toggle) */}
-            {season1Data && showSeason1 && (
+            {/* Season 1 */}
+            {resultS1 && showSeason1 && (
               <div className="allocation">
                 <h3>Your $U Allocation (Season 1):</h3>
                 <p className="allocation-value">
-                  {calculateAllocation(season1Data.mindshare).toLocaleString()} $U
+                  {calculateAllocation(resultS1.mindshare).toLocaleString()} $U
                 </p>
 
                 <h3>Value of Your $U Allocation:</h3>
@@ -125,37 +110,25 @@ export default function UnionCalculator() {
                     <tr>
                       <td>500M FDV (Ideal)</td>
                       <td>
-                        $
-                        {(
-                          calculateAllocation(season1Data.mindshare) * 0.5
-                        ).toLocaleString()}
+                        ${(calculateAllocation(resultS1.mindshare) * 0.5).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>1B FDV (Bull)</td>
                       <td>
-                        $
-                        {calculateAllocation(
-                          season1Data.mindshare
-                        ).toLocaleString()}
+                        ${calculateAllocation(resultS1.mindshare).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>1.5B FDV (SuperBull)</td>
                       <td>
-                        $
-                        {(
-                          calculateAllocation(season1Data.mindshare) * 1.5
-                        ).toLocaleString()}
+                        ${(calculateAllocation(resultS1.mindshare) * 1.5).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>2B FDV (GigaBull)</td>
                       <td>
-                        $
-                        {(
-                          calculateAllocation(season1Data.mindshare) * 2
-                        ).toLocaleString()}
+                        ${(calculateAllocation(resultS1.mindshare) * 2).toLocaleString()}
                       </td>
                     </tr>
                   </tbody>
@@ -167,4 +140,4 @@ export default function UnionCalculator() {
       )}
     </div>
   );
-              }
+        }
