@@ -109,7 +109,7 @@ export default function UnionCalculator() {
               <div className="allocation">
                 <h3>Your $U Allocation (Season 1):</h3>
                 <p className="allocation-value">
-                  {calculateAllocation(season1Mindshare, 30000).toLocaleString()} $U
+                  {calculateAllocation(season1Mindshare, 3000000).toLocaleString()} $U
                 </p>
 
                 <h3>Value of Your $U Allocation:</h3>
@@ -118,25 +118,25 @@ export default function UnionCalculator() {
                     <tr>
                       <td>500M FDV (Ideal)</td>
                       <td>
-                        ${(calculateAllocation(season1Mindshare, 30000) * 0.5).toLocaleString()}
+                        ${(calculateAllocation(season1Mindshare, 3000000) * 0.5).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>1B FDV (Bull)</td>
                       <td>
-                        ${calculateAllocation(season1Mindshare, 30000).toLocaleString()}
+                        ${calculateAllocation(season1Mindshare, 3000000).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>1.5B FDV (SuperBull)</td>
                       <td>
-                        ${(calculateAllocation(season1Mindshare, 30000) * 1.5).toLocaleString()}
+                        ${(calculateAllocation(season1Mindshare, 3000000) * 1.5).toLocaleString()}
                       </td>
                     </tr>
                     <tr>
                       <td>2B FDV (GigaBull)</td>
                       <td>
-                        ${(calculateAllocation(season1Mindshare, 30000) * 2).toLocaleString()}
+                        ${(calculateAllocation(season1Mindshare, 3000000) * 2).toLocaleString()}
                       </td>
                     </tr>
                   </tbody>
