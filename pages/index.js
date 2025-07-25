@@ -8,115 +8,155 @@ export default function UnionCalculator() {
   const [result1, setResult1] = useState(null);
 
   const handleSearch = () => {
-    const user0 = season0.find(
-      (u) => u.username.toLowerCase() === query.trim().toLowerCase()
-    );
-    const user1 = season1.find(
-      (u) => u.username.toLowerCase() === query.trim().toLowerCase()
-    );
+    const q = query.trim().toLowerCase();
+    const user0 = season0.find((u) => u.username.toLowerCase() === q);
+    const user1 = season1.find((u) => u.username.toLowerCase() === q);
     setResult0(user0 || null);
     setResult1(user1 || null);
   };
 
-  const calculateAllocation = (mindshare) => {
-    return parseFloat(mindshare) * 45000;
-  };
+  const calculateAllocation = (mindshare) =>
+    parseFloat(mindshare) * 45000;
+
+  const renderCard = (result, title) => (
+    <div
+      style={{
+        background: "#111",
+        padding: "1.5rem",
+        borderRadius: "1rem",
+        textAlign: "center",
+        flex: 1,
+        maxWidth: "420px",
+      }}
+    >
+      <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem", fontWeight: "bold" }}>{title}</h3>
+      <h4>Your $U Allocation:</h4>
+      <p style={{ fontSize: "1.8rem", margin: "0.5rem 0" }}>
+        {calculateAllocation(result.mindshare).toLocaleString()} $U
+      </p>
+      <h4>Value of Your $U Allocation:</h4>
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginTop: "1rem",
+        }}
+      >
+        <tbody>
+          {[
+            { label: "500M FDV (Ideal)", mul: 0.5 },
+            { label: "1B FDV (Bull)", mul: 1 },
+            { label: "1.5B FDV (SuperBull)", mul: 1.5 },
+            { label: "2B FDV (GigaBull)", mul: 2 },
+          ].map(({ label, mul }) => (
+            <tr key={label} style={{ borderBottom: "1px solid #333" }}>
+              <td style={{ padding: "0.4rem", textAlign: "left" }}>{label}</td>
+              <td style={{ padding: "0.4rem", textAlign: "right" }}>
+                $
+                {(calculateAllocation(result.mindshare) * mul).toLocaleString()}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
-    <div className="container">
-      <h1 className="title">Union Allocation Calculator by Shinosuka</h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "black",
+        color: "white",
+        padding: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "2rem" }}>
+        Union Allocation Calculator by Shinosuka
+      </h1>
 
-      <div className="search-box">
+      <div style={{ width: "100%", maxWidth: "500px", marginBottom: "2rem" }}>
         <input
           type="text"
-          placeholder="Search by username..."
+          placeholder="Shinosuka_eth"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="input"
+          style={{
+            width: "100%",
+            padding: "1rem",
+            backgroundColor: "#222",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            marginBottom: "1rem",
+          }}
         />
-        <button onClick={handleSearch} className="button">
+        <button
+          onClick={handleSearch}
+          style={{
+            width: "100%",
+            padding: "1rem",
+            backgroundColor: "#444",
+            color: "#fff",
+            fontWeight: "bold",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+          }}
+        >
           Search
         </button>
       </div>
 
       {(result0 || result1) && (
-        <div className="user-box">
-          {(result0?.pfp || result1?.pfp) && (
+        <div
+          style={{
+            background: "#111",
+            padding: "2rem",
+            borderRadius: "1.5rem",
+            textAlign: "center",
+            maxWidth: "900px",
+            width: "100%",
+          }}
+        >
+          {result0 && (
             <img
-              src={result0?.pfp || result1?.pfp}
-              alt="Twitter PFP"
-              className="pfp"
+              src={result0.pfp}
+              alt="PFP"
+              style={{
+                width: "96px",
+                height: "96px",
+                borderRadius: "50%",
+                border: "2px solid #444",
+                marginBottom: "1rem",
+              }}
             />
           )}
-          <h2 className="username">
-            @{result0?.username || result1?.username || query}
+          <h2 style={{ fontSize: "1.5rem", marginBottom: "0.2rem" }}>
+            @{(result0 || result1)?.username}
           </h2>
-          {result0 && <p className="mindshare">Season 0 Mindshare: {result0.mindshare}</p>}
-          {result1 && <p className="mindshare">Season 1 Mindshare: {result1.mindshare}</p>}
-        </div>
-      )}
+          <p style={{ color: "#aaa", marginBottom: "2rem" }}>
+            Mindshare: {(result0 || result1)?.mindshare}
+          </p>
 
-      {(result0 || result1) && (
-        <div className="tables">
-          {result0 && (
-            <div className="season-box">
-              <h3>Season 0 Stats</h3>
-              <p className="allocation-value">
-                {calculateAllocation(result0.mindshare).toLocaleString()} $U
-              </p>
-              <table className="fdv-table">
-                <tbody>
-                  <tr>
-                    <td>500M FDV (Ideal)</td>
-                    <td>${(calculateAllocation(result0.mindshare) * 0.5).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>1B FDV (Bull)</td>
-                    <td>${(calculateAllocation(result0.mindshare) * 1).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>1.5B FDV (SuperBull)</td>
-                    <td>${(calculateAllocation(result0.mindshare) * 1.5).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>2B FDV (GigaBull)</td>
-                    <td>${(calculateAllocation(result0.mindshare) * 2).toLocaleString()}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {result1 && (
-            <div className="season-box">
-              <h3>Season 1 Stats</h3>
-              <p className="allocation-value">
-                {calculateAllocation(result1.mindshare).toLocaleString()} $U
-              </p>
-              <table className="fdv-table">
-                <tbody>
-                  <tr>
-                    <td>500M FDV (Ideal)</td>
-                    <td>${(calculateAllocation(result1.mindshare) * 0.5).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>1B FDV (Bull)</td>
-                    <td>${(calculateAllocation(result1.mindshare) * 1).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>1.5B FDV (SuperBull)</td>
-                    <td>${(calculateAllocation(result1.mindshare) * 1.5).toLocaleString()}</td>
-                  </tr>
-                  <tr>
-                    <td>2B FDV (GigaBull)</td>
-                    <td>${(calculateAllocation(result1.mindshare) * 2).toLocaleString()}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "2rem",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {result0 && renderCard(result0, "Season 0 Stats")}
+            {result1 && renderCard(result1, "Season 1 Stats")}
+          </div>
         </div>
       )}
     </div>
   );
-          }
+        }
