@@ -11,16 +11,21 @@ export default function UnionCalculator() {
   const handleSearch = () => {
     const username = query.trim().toLowerCase();
 
-    const userS0 = season0.find((u) => u.username.toLowerCase() === username);
-    const userS1 = season1.find((u) => u.username.toLowerCase() === username);
+    const userS0 = season0.find(
+      (u) => u.username && u.username.toLowerCase() === username
+    );
+    const userS1 = season1.find(
+      (u) => u.username && u.username.toLowerCase() === username
+    );
 
     setResultS0(userS0 || null);
     setResultS1(userS1 || null);
-    setShowSeason1(!!userS1); // Only enable toggle if found
+    setShowSeason1(!!userS1); // toggle ON only if Season 1 data found
   };
 
   const calculateAllocation = (mindshare) => {
-    return parseFloat(mindshare) * 45000;
+    const parsed = parseFloat(mindshare);
+    return isNaN(parsed) ? 0 : parsed * 45000;
   };
 
   return (
@@ -42,7 +47,11 @@ export default function UnionCalculator() {
 
       {resultS0 && (
         <div className="result-box">
-          <img src={resultS0.pfp} alt="Twitter PFP" className="pfp" />
+          <img
+            src={resultS0.pfp}
+            alt="Twitter PFP"
+            className="pfp"
+          />
           <h2 className="username">@{resultS0.username}</h2>
           <p className="mindshare">Mindshare (Season 0): {resultS0.mindshare}</p>
 
@@ -71,19 +80,27 @@ export default function UnionCalculator() {
                 <tbody>
                   <tr>
                     <td>500M FDV (Ideal)</td>
-                    <td>${(calculateAllocation(resultS0.mindshare) * 0.5).toLocaleString()}</td>
+                    <td>
+                      ${(calculateAllocation(resultS0.mindshare) * 0.5).toLocaleString()}
+                    </td>
                   </tr>
                   <tr>
                     <td>1B FDV (Bull)</td>
-                    <td>${calculateAllocation(resultS0.mindshare).toLocaleString()}</td>
+                    <td>
+                      ${calculateAllocation(resultS0.mindshare).toLocaleString()}
+                    </td>
                   </tr>
                   <tr>
                     <td>1.5B FDV (SuperBull)</td>
-                    <td>${(calculateAllocation(resultS0.mindshare) * 1.5).toLocaleString()}</td>
+                    <td>
+                      ${(calculateAllocation(resultS0.mindshare) * 1.5).toLocaleString()}
+                    </td>
                   </tr>
                   <tr>
                     <td>2B FDV (GigaBull)</td>
-                    <td>${(calculateAllocation(resultS0.mindshare) * 2).toLocaleString()}</td>
+                    <td>
+                      ${(calculateAllocation(resultS0.mindshare) * 2).toLocaleString()}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -102,19 +119,27 @@ export default function UnionCalculator() {
                   <tbody>
                     <tr>
                       <td>500M FDV (Ideal)</td>
-                      <td>${(calculateAllocation(resultS1.mindshare) * 0.5).toLocaleString()}</td>
+                      <td>
+                        ${(calculateAllocation(resultS1.mindshare) * 0.5).toLocaleString()}
+                      </td>
                     </tr>
                     <tr>
                       <td>1B FDV (Bull)</td>
-                      <td>${calculateAllocation(resultS1.mindshare).toLocaleString()}</td>
+                      <td>
+                        ${calculateAllocation(resultS1.mindshare).toLocaleString()}
+                      </td>
                     </tr>
                     <tr>
                       <td>1.5B FDV (SuperBull)</td>
-                      <td>${(calculateAllocation(resultS1.mindshare) * 1.5).toLocaleString()}</td>
+                      <td>
+                        ${(calculateAllocation(resultS1.mindshare) * 1.5).toLocaleString()}
+                      </td>
                     </tr>
                     <tr>
                       <td>2B FDV (GigaBull)</td>
-                      <td>${(calculateAllocation(resultS1.mindshare) * 2).toLocaleString()}</td>
+                      <td>
+                        ${(calculateAllocation(resultS1.mindshare) * 2).toLocaleString()}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
