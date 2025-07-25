@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import season0 from "../public/top_2000_from_network.json";
-import season1 from "../public/season1-ss.json";
+import season1 from "../public/season1_ss.json";
 
 export default function UnionCalculator() {
   const [query, setQuery] = useState("");
