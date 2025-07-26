@@ -39,6 +39,8 @@ export default function UnionCalculator() {
         </a>
       </h1>
 
+      {/* Poster removed */}
+
       <div className="search-box">
         <input
           type="text"
@@ -57,11 +59,13 @@ export default function UnionCalculator() {
           <img src={resultS0.pfp} alt="PFP" className="pfp" />
           <h2 className="username">@{resultS0.username}</h2>
           <p className="mindshare">Mindshare (Season 0): {resultS0.mindshare}</p>
+
           {season1Mindshare && (
-  <p className="mindshare">
-    Mindshare (Season 1): {(season1Mindshare * 100).toFixed(3)}%
-  </p>
-)}
+            <p className="mindshare">
+              Mindshare (Season 1): {(season1Mindshare * 100).toFixed(3)}%
+            </p>
+          )}
+
           {season1Mindshare && (
             <button onClick={() => setShowSeason1(!showSeason1)} className="toggle-button">
               {showSeason1 ? "Hide" : "Show"} Season 1 Stats
@@ -119,8 +123,8 @@ export default function UnionCalculator() {
               </div>
             )}
 
-            {/* Tester Stats - hidden */}
-            { {testerInfo && (
+            {/* Tester Stats - hidden for now */}
+            {/* {testerInfo && (
               <div className="allocation">
                 <h3>Tester Stats</h3>
                 <table className="fdv-table">
@@ -132,10 +136,10 @@ export default function UnionCalculator() {
                   </tbody>
                 </table>
               </div>
-            )} }
+            )} */}
           </div>
         </div>
       )}
     </div>
   );
-          }
+            }
