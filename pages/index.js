@@ -1,29 +1,25 @@
 import React, { useState } from "react";
 import season0 from "../public/top_2000_from_network.json";
 import season1 from "../public/season1_ss.json";
+// import testerStats from "../public/union_leaderboard.json"; // HIDDEN for now
 
 export default function UnionCalculator() {
   const [query, setQuery] = useState("");
   const [resultS0, setResultS0] = useState(null);
   const [season1Mindshare, setSeason1Mindshare] = useState(null);
   const [showSeason1, setShowSeason1] = useState(false);
+  // const [testerInfo, setTesterInfo] = useState(null); // HIDDEN for now
 
   const handleSearch = () => {
     const username = query.trim().toLowerCase();
-
-    // Search in season 0
-    const userS0 = season0.find(
-      (u) => u.username.toLowerCase() === username
-    );
-
-    // Search only mindshare from season 1
-    const userS1 = season1.find(
-      (u) => u.username.toLowerCase() === username
-    );
+    const userS0 = season0.find((u) => u.username.toLowerCase() === username);
+    const userS1 = season1.find((u) => u.username.toLowerCase() === username);
+    // const tester = testerStats.find((u) => u.username.toLowerCase() === username);
 
     setResultS0(userS0 || null);
     setSeason1Mindshare(userS1 ? parseFloat(userS1.mindshare) : null);
-    setShowSeason1(!!userS1); // enable toggle only if season 1 user found
+    // setTesterInfo(tester || null);
+    setShowSeason1(!!userS1);
   };
 
   const calculateAllocation = (mindshare, multiplier) => {
@@ -31,8 +27,19 @@ export default function UnionCalculator() {
   };
 
   return (
-    <div className="container">
-      <h1 className="title">Union Allocation Calculator by Shinosuka</h1>
+    <div className="app-container">
+      <h1 className="main-title">
+        Union Allocation Calculator by{" "}
+        <a
+          href="https://x.com/shinosuka_eth"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Shinosuka
+        </a>
+      </h1>
+
+      <img src="/mad_yaps_poster.jpg" alt="MAD YAPS" className="poster" />
 
       <div className="search-box">
         <input
@@ -49,20 +56,16 @@ export default function UnionCalculator() {
 
       {resultS0 && (
         <div className="result-box">
-          <img src={resultS0.pfp} alt="Twitter PFP" className="pfp" />
+          <img src={resultS0.pfp} alt="PFP" className="pfp" />
           <h2 className="username">@{resultS0.username}</h2>
           <p className="mindshare">Mindshare (Season 0): {resultS0.mindshare}</p>
-
           {season1Mindshare && (
-            <>
-              <p className="mindshare">Mindshare (Season 1): {season1Mindshare}</p>
-              <button
-                onClick={() => setShowSeason1(!showSeason1)}
-                className="button toggle-button"
-              >
-                {showSeason1 ? "Hide" : "Show"} Season 1 Stats
-              </button>
-            </>
+            <p className="mindshare">Mindshare (Season 1): {season1Mindshare}</p>
+          )}
+          {season1Mindshare && (
+            <button onClick={() => setShowSeason1(!showSeason1)} className="toggle-button">
+              {showSeason1 ? "Hide" : "Show"} Season 1 Stats
+            </button>
           )}
 
           <div className="season-tables">
@@ -72,80 +75,67 @@ export default function UnionCalculator() {
               <p className="allocation-value">
                 {calculateAllocation(resultS0.mindshare, 45000).toLocaleString()} $U
               </p>
-
-              <h3>Value of Your $U Allocation:</h3>
+              <h4>Value of Your $U Allocation:</h4>
               <table className="fdv-table">
                 <tbody>
-                  <tr>
-                    <td>500M FDV (Ideal)</td>
-                    <td>
-                      ${(calculateAllocation(resultS0.mindshare, 45000) * 0.5).toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1B FDV (Bull)</td>
-                    <td>
-                      ${calculateAllocation(resultS0.mindshare, 45000).toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1.5B FDV (SuperBull)</td>
-                    <td>
-                      ${(calculateAllocation(resultS0.mindshare, 45000) * 1.5).toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2B FDV (GigaBull)</td>
-                    <td>
-                      ${(calculateAllocation(resultS0.mindshare, 45000) * 2).toLocaleString()}
-                    </td>
-                  </tr>
+                  {[0.5, 1, 1.5, 2].map((mult, i) => (
+                    <tr key={i}>
+                      <td>{500 * mult}M FDV ({["Ideal", "Bull", "SuperBull", "GigaBull"][i]})</td>
+                      <td>
+                        $
+                        {(
+                          calculateAllocation(resultS0.mindshare, 45000) * mult
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
 
-            {/* Season 1 (toggle section) */}
+            {/* Season 1 */}
             {season1Mindshare && showSeason1 && (
               <div className="allocation">
                 <h3>Your $U Allocation (Season 1):</h3>
                 <p className="allocation-value">
                   {calculateAllocation(season1Mindshare, 3000000).toLocaleString()} $U
                 </p>
-
-                <h3>Value of Your $U Allocation:</h3>
+                <h4>Value of Your $U Allocation:</h4>
                 <table className="fdv-table">
                   <tbody>
-                    <tr>
-                      <td>500M FDV (Ideal)</td>
-                      <td>
-                        ${(calculateAllocation(season1Mindshare, 3000000) * 0.5).toLocaleString()}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1B FDV (Bull)</td>
-                      <td>
-                        ${calculateAllocation(season1Mindshare, 3000000).toLocaleString()}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1.5B FDV (SuperBull)</td>
-                      <td>
-                        ${(calculateAllocation(season1Mindshare, 3000000) * 1.5).toLocaleString()}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>2B FDV (GigaBull)</td>
-                      <td>
-                        ${(calculateAllocation(season1Mindshare, 3000000) * 2).toLocaleString()}
-                      </td>
-                    </tr>
+                    {[0.5, 1, 1.5, 2].map((mult, i) => (
+                      <tr key={i}>
+                        <td>{500 * mult}M FDV ({["Ideal", "Bull", "SuperBull", "GigaBull"][i]})</td>
+                        <td>
+                          $
+                          {(
+                            calculateAllocation(season1Mindshare, 3000000) * mult
+                          ).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             )}
+
+            {/* Tester Stats - hidden */}
+            {/* {testerInfo && (
+              <div className="allocation">
+                <h3>Tester Stats</h3>
+                <table className="fdv-table">
+                  <tbody>
+                    <tr><td>Rank</td><td>{testerInfo.rank}</td></tr>
+                    <tr><td>Level</td><td>{testerInfo.level}</td></tr>
+                    <tr><td>Level Name</td><td>{testerInfo.level_name}</td></tr>
+                    <tr><td>XP</td><td>{testerInfo.xp}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            )} */}
           </div>
         </div>
       )}
     </div>
   );
-            }
+          }
